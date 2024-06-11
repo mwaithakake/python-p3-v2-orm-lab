@@ -1,6 +1,6 @@
 # lib/employee.py
 from __init__ import CURSOR, CONN
-from department import Department
+from review import Review
 
 class Employee:
 
@@ -51,11 +51,12 @@ class Employee:
 
     @department_id.setter
     def department_id(self, department_id):
-        if type(department_id) is int and Department.find_by_id(department_id):
+        if type(department_id) is int:
             self._department_id = department_id
         else:
             raise ValueError(
-                "department_id must reference a department in the database")
+                "department_id must be an integer"
+            )
 
     @classmethod
     def create_table(cls):
@@ -185,15 +186,12 @@ class Employee:
         row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
 
-   # In employee.py
-
-def reviews(self):
-    """Return list of reviews associated with the current employee"""
-    from review import Review  # Import Review class here to avoid circular imports
-    sql = """
-        SELECT * FROM reviews
-        WHERE employee_id = ?
-    """
-    CURSOR.execute(sql, (self.id,))
-    rows = CURSOR.fetchall()
-    return [Review.instance_from_db(row) for row in rows]
+    def reviews(self):
+        """Return list of reviews associated with the current employee"""
+        sql = """
+            SELECT * FROM reviews
+            WHERE employee_id = ?
+        """
+        CURSOR.execute(sql, (self.id,))
+        rows = CURSOR.fetchall()
+        return [Review.instance_from_db(row) for row in rows]
